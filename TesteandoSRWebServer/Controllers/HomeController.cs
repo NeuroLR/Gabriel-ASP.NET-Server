@@ -12,14 +12,16 @@ namespace TesteandoSRWebServer.Controllers
         {
             _logger = logger;
         }
-
+      
         public IActionResult Index()
         {
+            Console.WriteLine("Se inicio el index");
             return View();
         }
 
         public IActionResult Privacy()
         {
+            Console.WriteLine("Se inicio el Privacy");
             return View();
         }
 
