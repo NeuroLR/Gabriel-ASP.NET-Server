@@ -1,6 +1,9 @@
+using Google.Cloud.Firestore;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using TesteandoSRWebServer.Models;
+using TesteandoSRWebServer.Repositories;
+using TesteandoSRWebServer.Services;
 
 namespace TesteandoSRWebServer.Controllers
 {
@@ -27,8 +30,17 @@ namespace TesteandoSRWebServer.Controllers
 
         public IActionResult Firebase() 
         {
-            TestingFirebase testingFirebase = new();
-            testingFirebase.GetAllUsers();
+            string dbId = Environment.GetEnvironmentVariable("FIRESTORE_ID");
+            FirestoreDb db = FirestoreDb.Create(dbId);
+            FirebaseUserRepository userRepository = new(db);
+            new Thread(async () =>
+            {
+                var result = await userRepository.GetAllUsersAsync();
+                foreach (var item in result)
+                {
+                    Console.WriteLine(item.ToString());
+                }
+            }).Start();
             return View();
         }
 

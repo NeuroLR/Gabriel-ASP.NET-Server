@@ -2,8 +2,22 @@
 {
     public class Usuario
     {
-        public string? nombre { get; set; }
-        public string? apellido { get; set; }
-        public string? movil { get; set; }
+        public string? Nombre { get; set; }
+        public string? Apellido { get; set; }
+        public string? Movil { get; set; }
+
+        public Usuario() { }
+
+        public Usuario(string nombre, string apellido, string movil) 
+        { 
+            Nombre = nombre;
+            Apellido = apellido;
+            Movil = movil;
+        }
+
+        public override string ToString()
+        {
+            return $"nombre: {Nombre}, apellido: {Apellido}, movil: {Movil}";
+        }
     }
 }

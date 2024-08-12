@@ -1,11 +1,10 @@
 ﻿using FirebaseAdmin.Messaging;
 using Newtonsoft.Json;
+using TesteandoSRWebServer.Models;
 
-
-
-namespace TesteandoSRWebServer.Models
+namespace TesteandoSRWebServer.Services
 {
-    
+
     public class NotificationManager
     {
         private NotificationBody? body;
@@ -26,17 +25,6 @@ namespace TesteandoSRWebServer.Models
             if (body == null)
             {
                 Console.WriteLine("El body es nulo");
-            } else
-            {
-                Console.WriteLine(body.UserId);
-                Console.WriteLine(body.Activity);
-                Console.WriteLine(body.Profesional);
-                Console.WriteLine(body.DocId);
-                Console.WriteLine(body.FcmToken);
-                foreach ((string key, string value) in body.Data)
-                {
-                    Console.WriteLine($"key: {key}, value: {value}");
-                }
             }
         }
         /// <summary>
@@ -69,7 +57,7 @@ namespace TesteandoSRWebServer.Models
         private Message CreateMessage(NotificationBody msgBody)
         {
             string titulo = msgBody.Data.GetValueOrDefault("title") ?? throw new ArgumentNullException();
-            string message = msgBody.Data.GetValueOrDefault("message") ?? throw new ArgumentNullException();    
+            string message = msgBody.Data.GetValueOrDefault("message") ?? throw new ArgumentNullException();
 
             string intentFilter;
             switch (msgBody.Activity)
@@ -94,7 +82,7 @@ namespace TesteandoSRWebServer.Models
                         intentFilter = "proyecto.necessito.activity_main.notification";
                         break;
                     }
-                    
+
             }
 
             string esProfesional = (!msgBody.Profesional).ToString() ?? "null";

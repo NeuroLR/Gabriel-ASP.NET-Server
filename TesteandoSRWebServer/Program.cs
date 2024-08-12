@@ -1,5 +1,8 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using TesteandoSRWebServer;
 using TesteandoSRWebServer.Models;
 
 
@@ -7,23 +10,33 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "D:\\Proyectos\\TesteandoSRWebServer\\TesteandoSRWebServer\\necessito-proyecto-app-firebase-adminsdk-yyy5w-66ab3b278f.json");
+        Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", Utils.GoogleCredentialsPath);
+        Environment.SetEnvironmentVariable("FIRESTORE_ID", Utils.FirestoreId);
 
         FirebaseApp.Create(new AppOptions
         {
-            Credential = GoogleCredential.FromFile("necessito-proyecto-app-firebase-adminsdk-yyy5w-66ab3b278f.json"),
-            ProjectId = "necessito-proyecto-app"
+            Credential = GoogleCredential.FromFile(Utils.AdminSdkFile),
+            ProjectId = Utils.FirestoreId
         });
 
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddHttpClient();
-
         // Add services to the container.
         builder.Services.AddControllersWithViews();
 
-        var app = builder.Build();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: "test",
+                              policy =>
+                              {
+                                  policy.WithOrigins("*")
+                                  .AllowAnyMethod()
+                                  .AllowAnyHeader();
+                              });
+        });
 
+        var app = builder.Build();
+        
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
         {
@@ -37,37 +50,17 @@ internal class Program
 
         app.UseRouting();
 
+        app.UseCors("test");
+
         app.UseAuthorization();
 
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
 
-        app.MapGet("/.well-known/assetlinks.json", async (HttpContext context) =>
+        app.UseEndpoints(endpoints =>
         {
-            FileStream stream  = new(@"assetlinks.json", FileMode.Open);
-            string reader = new StreamReader(stream).ReadToEnd();
-            context.Response.StatusCode = 200;
-            context.Response.ContentType = "application/json; charset=utf-8";
-            await context.Response.WriteAsync(reader);
-        });
-
-        app.MapPost("/pushNotification", async (HttpContext context) => 
-        {
-            try
-            {
-                Console.WriteLine("se llamo al endpoint pushNotification");
-                NotificationManager manager = new(context);
-                manager.SendNotification();
-                context.Response.StatusCode = 200;
-                context.Response.ContentType = "text/plain";
-                await context.Response.WriteAsync("notificacion enviada exitosamente");
-            }
-            catch (Exception ex)
-            {
-                context.Response.StatusCode = 500;
-                await context.Response.WriteAsJsonAsync(ex);
-            }
+            endpoints.MapControllers();
         });
 
         app.Run();
