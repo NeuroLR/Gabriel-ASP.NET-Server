@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using TesteandoSRWebServer.Models;
 using TesteandoSRWebServer.Repositories;
-using TesteandoSRWebServer.Services;
+
 
 namespace TesteandoSRWebServer.Controllers
 {
