@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Google.Cloud.Firestore;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using TesteandoSRWebServer.Models;
+using TesteandoSRWebServer.Repositories;
 using TesteandoSRWebServer.Services;
 
 namespace TesteandoSRWebServer.Controllers
@@ -77,7 +79,7 @@ namespace TesteandoSRWebServer.Controllers
                 if (response != null)
                 {
                     var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
-                    var result = await new TestingFirebase().SaveSubId(userId, json["id"].ToString());
+                    var result = await new FirestoreExpertRepository(FirestoreDb.Create(Utils.FirestoreId)).SaveSubIdAsync(userId, json["id"].ToString());
                     if (!result)
                     {
                         Console.WriteLine("Ocurrio un error guardando el subId");
